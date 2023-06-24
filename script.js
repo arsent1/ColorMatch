@@ -9,6 +9,7 @@ class ColorMatch {
 
     startGame() {
         this.totalPoints = 0;
+        this.level = 0;
         this.ticker.innerText = this.totalPoints;
         this.timer.innerText = this.totalTime;
         this.timeRemaining = this.totalTime;
@@ -22,8 +23,6 @@ class ColorMatch {
         if (this.correctCard(card)) {
             this.totalPoints++;
             this.ticker.innerText = this.totalPoints;
-            this.timer.innerText = this.totalTime;
-            this.timeRemaining = this.totalTime;
         }
     }
 
@@ -88,7 +87,18 @@ class ColorMatch {
         let blue = parseInt(rgbValues[2]);
 
         // Calculate the new color values by adding/subtracting an offset
-        const colorOffset = 50; // Adjust this value as needed
+        let colorOffset = 50; // Adjust this value as needed
+
+        if (this.level == 1) {
+            colorOffset = 25;
+        } 
+        else if (this.level == 2) {
+            colorOffset = 12;
+        }
+        else if (this.level == 3) {
+            colorOffset = 6;
+        }
+
         let newRed = red + colorOffset;
         let newGreen = green + colorOffset;
         let newBlue = blue + colorOffset;
@@ -111,6 +121,7 @@ class ColorMatch {
     checkCorrect(card1) {
         if (this.getCardIndex(card1) == this.diffIndex) {
             this.countCard(card1);
+            this.setLevel();
             this.setRandomColor();
             this.getDiffIndex();
             this.setDiffCard(this.diffIndex);
@@ -120,12 +131,28 @@ class ColorMatch {
         }
     }
 
+    setLevel() {
+        if (this.totalPoints < 10) {
+            this.level = 0;
+        }
+        else if (this.totalPoints >= 10 && this.totalPoints < 20) {
+            this.level = 1;
+        }
+        else if (this.totalPoints >= 20 && this.totalPoints < 30) {
+            this.level = 2;
+        }
+        else {
+            this.level = 3;
+        }
+    }
+
+    
 }
 
 function ready() {
     let overlays = Array.from(document.getElementsByClassName("overlay-text"));
     let cards = Array.from(document.getElementsByClassName("card"));
-    let game = new ColorMatch(10, cards);
+    let game = new ColorMatch(30, cards);
 
     overlays.forEach(overlay => {
         overlay.addEventListener("click", () => {
