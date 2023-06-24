@@ -138,7 +138,7 @@ class ColorMatch {
         else if (this.totalPoints >= 10 && this.totalPoints < 20) {
             this.level = 1;
         }
-        else if (this.totalPoints >= 20 && this.totalPoints < 30) {
+        else if (this.totalPoints >= 20 && this.totalPoints < 25) {
             this.level = 2;
         }
         else {
