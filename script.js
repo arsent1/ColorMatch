@@ -47,6 +47,23 @@ class ColorMatch {
         clearInterval(this.countdown);
         document.getElementById("game-over-text").classList.add("visible");
     }
+
+    generateRandomColor(){
+        let maxVal = 0xFFFFFF; // 16777215
+        let randomNumber = Math.random() * maxVal; 
+        randomNumber = Math.floor(randomNumber);
+        randomNumber = randomNumber.toString(16);
+        let randColor = randomNumber.padStart(6, 0);   
+        return `#${randColor.toUpperCase()}`
+    }
+    
+    setRandomColor() {
+        let randomColor = this.generateRandomColor();
+        let exp = document.getElementsByClassName("card");
+        for (let i = 0; i < 10; i++) {
+            exp[i].style.backgroundColor = randomColor;
+        }
+    }
 }
 
 function ready() {
@@ -62,8 +79,9 @@ function ready() {
     });
 
     cards.forEach(card => {
-        card.addEventListener('click', () => {
+        card.addEventListener("click", () => {
             game.countCard(card);
+            game.setRandomColor();
         });
     });
 }
