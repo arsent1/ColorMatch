@@ -5,19 +5,25 @@ class ColorMatch {
         this.timeRemaining = totalTime;
         this.timer = document.getElementById("time-remaining");
         this.ticker = document.getElementById("points");
-        
     }
 
     startGame() {
         this.totalPoints = 0;
+        this.ticker.innerText = this.totalPoints;
+        this.timer.innerText = this.totalTime;
         this.timeRemaining = this.totalTime;
         this.countdown = this.startCountdown();
+        this.getDiffIndex();
+        this.setRandomColor();
+        this.setDiffCard(this.diffIndex);
     }
 
     countCard(card) {
         if (this.correctCard(card)) {
             this.totalPoints++;
             this.ticker.innerText = this.totalPoints;
+            this.timer.innerText = this.totalTime;
+            this.timeRemaining = this.totalTime;
         }
     }
 
@@ -25,13 +31,13 @@ class ColorMatch {
         return true;
     }
     
-    shuffleCards() {
-        for (let i = this.cardsArray.length() - 1; i > 0; i--) {
-            let randIndex = Math.floor(Math.random() * (i+1));
-            this.cardsArray[randIndex].style.order = i;
-            this.cardsArray[i].style.order = randIndex;
-        }   
-    }
+    // shuffleCards() {     
+    //     for (let i = this.cardsArray.length() - 1; i > 0; i--) {
+    //         let randIndex = Math.floor(Math.random() * (i+1));
+    //         this.cardsArray[randIndex].style.order = i;
+    //         this.cardsArray[i].style.order = randIndex;
+    //     }   
+    // }
 
     startCountdown() {
         return setInterval( () => {
@@ -59,11 +65,61 @@ class ColorMatch {
     
     setRandomColor() {
         let randomColor = this.generateRandomColor();
-        let exp = document.getElementsByClassName("card");
-        for (let i = 0; i < 10; i++) {
-            exp[i].style.backgroundColor = randomColor;
+        for (let i = 0; i < 9; i++) {
+            this.cardsArray[i].style.backgroundColor = randomColor;
         }
     }
+
+    getDiffIndex() {
+        let index = Math.floor(Math.random() * 9);
+        this.diffIndex = index; //Update class member that stores the index of diffrent colored tile
+    }
+
+    setDiffCard(index) {
+        let element = this.cardsArray[index];
+
+        // Get the current color of the element
+        let currentColor = getComputedStyle(element).getPropertyValue("background-color");
+
+        // Convert the color to RGB format
+        let rgbValues = currentColor.match(/\d+/g);
+        let red = parseInt(rgbValues[0]);
+        let green = parseInt(rgbValues[1]);
+        let blue = parseInt(rgbValues[2]);
+
+        // Calculate the new color values by adding/subtracting an offset
+        const colorOffset = 50; // Adjust this value as needed
+        let newRed = red + colorOffset;
+        let newGreen = green + colorOffset;
+        let newBlue = blue + colorOffset;
+
+        // Apply the new color to the element
+        element.style.backgroundColor = `rgb(${newRed}, ${newGreen}, ${newBlue})`;
+    }
+
+    getCardIndex(card) {
+        let cardIndex = null;
+        for (let i = 0; i < 9; i++) {
+            if (this.cardsArray[i] == card) {
+                cardIndex = i;
+            }
+        }
+        return cardIndex;
+    }
+
+    // Check if card clicked is == to the diffIndex go to next round, if not game over
+    checkCorrect(card1) {
+        if (this.getCardIndex(card1) == this.diffIndex) {
+            this.countCard(card1);
+            this.setRandomColor();
+            this.getDiffIndex();
+            this.setDiffCard(this.diffIndex);
+        }
+        else {
+            this.gameOver();
+        }
+    }
+
 }
 
 function ready() {
@@ -80,8 +136,7 @@ function ready() {
 
     cards.forEach(card => {
         card.addEventListener("click", () => {
-            game.countCard(card);
-            game.setRandomColor();
+            game.checkCorrect(card);
         });
     });
 }
